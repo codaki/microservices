@@ -12,7 +12,7 @@ public interface CursoService {
     Curso guardar(Curso curso);
     void eliminar(Long id);
 
-    Optional <Usuario> agregarUsuario(Usuario usuario, Long idCurso);
-    Optional <Usuario> crearUsuario(Usuario usuario, Long idCurso);
-    Optional <Usuario> eliminarUsuario(Usuario usuario, Long idCurso);
+    Boolean agregarUsuario(Usuario usuario, Long idCurso);
+   // Optional <Usuario> crearUsuario(Usuario usuario, Long idCurso);
+    Boolean eliminarUsuario(Usuario usuario, Long idCurso);
 }

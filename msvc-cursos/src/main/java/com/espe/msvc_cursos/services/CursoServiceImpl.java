@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -46,9 +46,9 @@ public class CursoServiceImpl implements CursoService{
     }
 
     @Override
-    public Optional <Usuario> agregarUsuario(Usuario usuario, Long idCurso){
-        Optional <Curso> o = cursoRepository.findById(idCurso);
-        if(o.isPresent()){
+    public Boolean agregarUsuario(Usuario usuario, Long idCurso) {
+        Optional<Curso> o = cursoRepository.findById(idCurso);
+        if (o.isPresent()) {
             Usuario usuarioMicro = usuarioClientRest.detalle(usuario.getId());
             Curso curso = o.get();
             CursoUsuario cursoUsuario = new CursoUsuario();
@@ -56,38 +56,43 @@ public class CursoServiceImpl implements CursoService{
 
             curso.addCursoUsuario(cursoUsuario);
             cursoRepository.save(curso);
+            return true;
         }
-        return Optional.empty();
-    }
+        return false;
+}
+
+//    @Override
+//    public Optional <Usuario> crearUsuario(Usuario usuario, Long idCurso){
+//        Optional <Curso> o = cursoRepository.findById(idCurso);
+//        if(o.isPresent()){
+//            Usuario usuarioMicro = usuarioClientRest.crear(usuario);
+//            Curso curso = o.get();
+//            CursoUsuario cursoUsuario = new CursoUsuario();
+//            cursoUsuario.setUsuarioId(usuarioMicro.getId());
+//
+//            curso.addCursoUsuario(cursoUsuario);
+//            cursoRepository.save(curso);
+//        }
+//        return Optional.empty();
+//    }
 
     @Override
-    public Optional <Usuario> crearUsuario(Usuario usuario, Long idCurso){
-        Optional <Curso> o = cursoRepository.findById(idCurso);
-        if(o.isPresent()){
-            Usuario usuarioMicro = usuarioClientRest.crear(usuario);
-            Curso curso = o.get();
-            CursoUsuario cursoUsuario = new CursoUsuario();
-            cursoUsuario.setUsuarioId(usuarioMicro.getId());
-
-            curso.addCursoUsuario(cursoUsuario);
-            cursoRepository.save(curso);
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional <Usuario> eliminarUsuario(Usuario usuario, Long idCurso){
-        Optional <Curso> o = cursoRepository.findById(idCurso);
-        if(o.isPresent()){
+    public Boolean eliminarUsuario(Usuario usuario, Long idCurso) {
+        Optional<Curso> o = cursoRepository.findById(idCurso);
+        if (o.isPresent()) {
             Usuario usuarioMicro = usuarioClientRest.detalle(usuario.getId());
             Curso curso = o.get();
-            CursoUsuario cursoUsuario = new CursoUsuario();
-            cursoUsuario.setUsuarioId(usuarioMicro.getId());
-
-            curso.removeCursoUsuario(cursoUsuario);
-            cursoRepository.save(curso);
+            CursoUsuario existentes = curso.getCursoUsuario().stream()
+                    .filter(cu -> cu.getUsuarioId().equals(usuarioMicro.getId()))
+                    .findFirst()
+                    .orElse(null);
+            if (existentes != null) {
+                curso.removeCursoUsuario(existentes);
+                cursoRepository.save(curso);
+                return true;
+            }
         }
-        return Optional.empty();
+   return false;
     }
 
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class UsuarioController {
     @Autowired
     private UsuarioService service;
@@ -64,7 +65,7 @@ public class UsuarioController {
             Usuario usuarioDb = o.get();
             usuarioDb.setNombre(usuario.getNombre());
             usuarioDb.setEmail(usuario.getEmail());
-            usuarioDb.setPassword(usuario.getPassword());;
+            usuarioDb.setPassword(usuario.getPassword());
             return ResponseEntity.status(HttpStatus.CREATED).body(service.guardar(usuarioDb));
         }
 
@@ -79,11 +80,11 @@ public class UsuarioController {
         }
         return ResponseEntity.notFound().build();
     }
-    private static ResponseEntity<?> validar1(BindingResult result) {
-       Map<String,String> errores = new HashMap<>();
-         result.getFieldErrors().forEach(err -> {
-              errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
-         });
-            return ResponseEntity.badRequest().body(errores);
-    }
+//    private static ResponseEntity<?> validar1(BindingResult result) {
+//       Map<String,String> errores = new HashMap<>();
+//         result.getFieldErrors().forEach(err -> {
+//              errores.put(err.getField(), "El campo " + err.getField() + " " + err.getDefaultMessage());
+//         });
+//            return ResponseEntity.badRequest().body(errores);
+//    }
 }

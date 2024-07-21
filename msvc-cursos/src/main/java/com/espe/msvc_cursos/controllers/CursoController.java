@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class CursoController {
     @Autowired
     private CursoService cursoService;
@@ -57,19 +58,35 @@ public class CursoController {
         }
         return ResponseEntity.notFound().build();
     }
-    @PutMapping("/agregarUsuario/{idCurso}")
+    @PutMapping("/asignarUsuario/{idCurso}")
     public ResponseEntity<?> agregarUsuario(@RequestBody Usuario usuario, @PathVariable Long idCurso) {
-        Optional<Usuario> o;
+        Boolean result;
         try {
-            o = cursoService.agregarUsuario(usuario, idCurso);
+            result = cursoService.agregarUsuario(usuario, idCurso);
+            if (result) {
+                return ResponseEntity.status(HttpStatus.OK).body(result);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result);
+            }
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.singletonMap("mensaje", "Error:" + e.getMessage()));
+            return ResponseEntity.status(e.status()).body(Collections.singletonMap("error", "Error al agregar usuario al curso"));
+}
+}
+    @PutMapping("/eliminarUsuario/{idCurso}")
+    public ResponseEntity<?> eliminarUsuario(@RequestBody Usuario usuario, @PathVariable Long idCurso) {
+        Boolean o;
+        try {
+            o = cursoService.eliminarUsuario(usuario, idCurso);
+            if(o){
+                return ResponseEntity.status(HttpStatus.OK).body(o);
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(o);
+            }
+            //return ResponseEntity.status(HttpStatus.OK).body(cursoService.eliminarUsuario(usuario, idCurso));
+        } catch (FeignException e) {
+            return ResponseEntity.status(e.status()).body(Collections.singletonMap("error", "Error al eliminar usuario del curso"));
         }
-        if (o.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(o.get());
-        }
-        return ResponseEntity.notFound().build();
     }
 
 }
